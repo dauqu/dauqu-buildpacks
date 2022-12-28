@@ -9,6 +9,14 @@ func CreateDockerfile(Workdir string, Port string, language string, Name string)
 
 	rname := strings.ReplaceAll(Name, ".", "_")
 
+	docker_static := `
+FROM nginx:1.19.6-alpine
+WORKDIR ` + Workdir + "/" + rname + `
+COPY . .
+EXPOSE ` + Port + `
+CMD ["nginx", "-g", "daemon off;"]
+	`
+
 	docker_nodejs := `
 FROM node:16.3.0-alpine3.13
 WORKDIR ` + Workdir + "/" + rname + `
@@ -52,6 +60,104 @@ RUN cargo build --release
 EXPOSE ` + Port + `
 CMD [ "./target/release/main" ]
 	`
+	docker_clojure := `
+FROM clojure:openjdk-11-lein-2.9.5-alpine
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "lein", "run" ]
+	`
+	docker_ruby := `
+FROM ruby:2.7.2-alpine3.13
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "ruby", "main.rb" ]
+	`
+	docker_java := `
+FROM openjdk:11.0.10-jdk
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "java", "main.java" ]
+	`
+	docker_c := `
+FROM gcc:10.2.0
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "gcc", "main.c" ]
+	`
+	docker_csharp := `
+FROM mcr.microsoft.com/dotnet/sdk:5.0
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "dotnet", "run" ]
+	`
+	docker_swift := `
+FROM swift:5.3.3
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "swift", "main.swift" ]
+	`
+	docker_elixir := `
+FROM elixir:1.11.3-alpine
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "elixir", "main.exs" ]
+	`
+	docker_haskell := `
+FROM haskell:8.10.4
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "ghc", "main.hs" ]
+	`
+	docker_perl := `
+FROM perl:5.32.1
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "perl", "main.pl" ]
+	`
+	docker_dart := `
+FROM google/dart:2.12.0
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "dart", "main.dart" ]
+	`
+	docker_lua := `
+FROM lua:5.4.1-alpine
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "lua", "main.lua" ]
+	`
+	docker_r := `
+FROM rocker/r-ver:4.0.3
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "Rscript", "main.R" ]
+	`
+	docker_kotlin := `
+FROM openjdk:11.0.10-jdk
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "kotlinc", "main.kt" ]
+	`
+	docker_scala := `
+FROM openjdk:11.0.10-jdk
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "scalac", "main.scala" ]
+	`
 
 	dockerfile := Workdir + "/" + rname + "/"
 
@@ -65,6 +171,13 @@ CMD [ "./target/release/main" ]
 
 	//Switch method based on language
 	switch language {
+	case "static":
+		//Write Dockerfile
+		_, err = file.WriteString(docker_static)
+		if err != nil {
+			return err
+		}
+
 	case "go":
 		//Write Dockerfile
 		_, err = file.WriteString(docker_golang)
@@ -102,74 +215,101 @@ CMD [ "./target/release/main" ]
 
 	case "clojure":
 		//Write Dockerfile
-		_, err = file.WriteString("FROM clojure:openjdk-11-lein-2.9.5-alpine\n" + "WORKDIR /app\n" + "COPY . .\n" + "RUN lein uberjar\n" + "EXPOSE " + Port + "\n" + "CMD [\"java\", \"-jar\", \"target/uberjar/main-0.1.0-SNAPSHOT-standalone.jar\"]")
+		_, err = file.WriteString(docker_clojure)
 		if err != nil {
 			return err
 		}
 
 	case "java":
 		//Write Dockerfile
-		_, err = file.WriteString("FROM openjdk:11.0.10-jdk-buster\n" + "WORKDIR /app\n" + "COPY . .\n" + "RUN javac main.java\n" + "EXPOSE " + Port + "\n" + "CMD [\"java\", \"main\"]")
+		_, err = file.WriteString(docker_java)
 		if err != nil {
 			return err
 		}
 
 	case "ruby":
 		//Write Dockerfile
-		_, err = file.WriteString("FROM ruby:2.7.2-alpine3.13\n" + "WORKDIR /app\n" + "COPY . .\n" + "RUN bundle install\n" + "EXPOSE " + Port + "\n" + "CMD [\"ruby\", \"main.rb\"]")
+		_, err = file.WriteString(docker_ruby)
 		if err != nil {
 			return err
 		}
 
 	case "c":
 		//Write Dockerfile
-		_, err = file.WriteString("FROM gcc:10.2.0-alpine3.13\n" + "WORKDIR /app\n" + "COPY . .\n" + "RUN gcc main.c -o main\n" + "EXPOSE " + Port + "\n" + "CMD [\"./main\"]")
+		_, err = file.WriteString(docker_c)
 		if err != nil {
 			return err
 		}
 
 	case "csharp":
 		//Write Dockerfile
-		_, err = file.WriteString("FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine\n" + "WORKDIR /app\n" + "COPY . .\n" + "RUN dotnet publish -c Release -o out\n" + "EXPOSE " + Port + "\n" + "CMD [\"dotnet\", \"out/main.dll\"]")
+		_, err = file.WriteString(docker_csharp)
 		if err != nil {
 			return err
 		}
 
 	case "swift":
 		//Write Dockerfile
-		_, err = file.WriteString("FROM swift:5.3.3-focal\n" + "WORKDIR /app\n" + "COPY . .\n" + "RUN swift build -c release\n" + "EXPOSE " + Port + "\n" + "CMD [\"./.build/release/main\"]")
+		_, err = file.WriteString(docker_swift)
 		if err != nil {
 			return err
 		}
 
 	case "elixir":
 		//Write Dockerfile
-		_, err = file.WriteString("FROM elixir:1.11.3-alpine\n" + "WORKDIR /app\n" + "COPY . .\n" + "RUN mix local.hex --force\n" + "RUN mix local.rebar --force\n" + "RUN mix deps.get\n" + "RUN mix compile\n" + "EXPOSE " + Port + "\n" + "CMD [\"mix\", \"run\", \"--no-halt\"]")
+		_, err = file.WriteString(docker_elixir)
 		if err != nil {
 			return err
 		}
 
 	case "haskell":
 		//Write Dockerfile
-		_, err = file.WriteString("FROM haskell:8.10.4-alpine\n" + "WORKDIR /app\n" + "COPY . .\n" + "RUN stack build\n" + "EXPOSE " + Port + "\n" + "CMD [\"stack\", \"exec\", \"main\"]")
+		_, err = file.WriteString(docker_haskell)
 		if err != nil {
 			return err
 		}
 
 	case "dart":
 		//Write Dockerfile
-		_, err = file.WriteString("FROM google/dart:2.12.0\n" + "WORKDIR /app\n" + "COPY . .\n" + "RUN pub get\n" + "EXPOSE " + Port + "\n" + "CMD [\"dart\", \"main.dart\"]")
+		_, err = file.WriteString(docker_dart)
 		if err != nil {
 			return err
 		}
 
 	case "kotlin":
 		//Write Dockerfile
-		_, err = file.WriteString("FROM openjdk:11.0.10-jdk-buster\n" + "WORKDIR /app\n" + "COPY . .\n" + "RUN kotlinc main.kt -include-runtime -d main.jar\n" + "EXPOSE " + Port + "\n" + "CMD [\"java\", \"-jar\", \"main.jar\"]")
+		_, err = file.WriteString(docker_kotlin)
 		if err != nil {
 			return err
 		}
 
+	case "scala":
+		//Write Dockerfile
+		_, err = file.WriteString(docker_scala)
+		if err != nil {
+			return err
+		}
+
+	case "perl":
+		//Write Dockerfile
+		_, err = file.WriteString(docker_perl)
+		if err != nil {
+			return err
+		}
+
+	case "lua":
+		//Write Dockerfile
+		_, err = file.WriteString(docker_lua)
+		if err != nil {
+			return err
+		}
+
+	case "r":
+		//Write Dockerfile
+		_, err = file.WriteString(docker_r)
+		if err != nil {
+			return err
+		}
 	}
 
 	//Close file

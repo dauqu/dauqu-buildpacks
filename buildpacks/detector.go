@@ -20,8 +20,12 @@ func DetectLanguage(Source string) (res string, err error) {
 		//Get files extension
 		ext := filepath.Ext(file.Name())
 
+		if file.Name() == "index.html" && ext == ".html" {
+			return "static", nil
+		}
+
 		//If there is a main.go and go.mod file
-		if file.Name() == "main.go" || file.Name() == "go.mod" || ext == ".go" {
+		if file.Name() == "main.go" || file.Name() == "go.mod" && ext == ".go" {
 			return "go", nil
 		}
 
@@ -31,7 +35,7 @@ func DetectLanguage(Source string) (res string, err error) {
 		}
 
 		//If there is a index.php file
-		if file.Name() == "index.php" && ext == ".php" {
+		if file.Name() == "index.php" || file.Name() == "composer.json" && ext == ".php" {
 			return "php", nil
 		}
 
@@ -41,12 +45,12 @@ func DetectLanguage(Source string) (res string, err error) {
 		}
 
 		//Find Ruby project
-		if file.Name() == "Cargo.toml" {
+		if file.Name() == "Cargo.toml" && ext == ".rs" {
 			return "rust", nil
 		}
 
 		//Find Clojure project
-		if file.Name() == "project.clj" {
+		if file.Name() == "project.clj" && ext == ".clj" {
 			return "clojure", nil
 		}
 
@@ -56,7 +60,7 @@ func DetectLanguage(Source string) (res string, err error) {
 		}
 
 		//Find dart project by checking if there is a pubspec.yaml and a main.dart both files or not
-		if file.Name() == "pubspec.yaml" || file.Name() == "main.dart" {
+		if file.Name() == "pubspec.yaml" || file.Name() == "main.dart" && ext == ".dart" {
 			return "dart", nil
 		}
 
@@ -71,7 +75,7 @@ func DetectLanguage(Source string) (res string, err error) {
 		}
 
 		//Find Java project by checking if there is a pom.xml file or not
-		if file.Name() == "pom.xml" {
+		if file.Name() == "pom.xml" && ext == ".xml" || file.Name() == "build.gradle" {
 			return "java", nil
 		}
 

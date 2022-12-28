@@ -7,8 +7,8 @@ import (
 
 func main() {
 
-	project_dir := "/Users/harshaweb/Documents/projects"
-	name := "wordpress"
+	project_dir := "/var/www"
+	name := "php"
 	expose_port := "80"
 
 	//Dectect language
