@@ -53,7 +53,6 @@ EXPOSE ` + Port + `
 CMD [ "./target/release/main" ]
 	`
 
-
 	dockerfile := Workdir + "/" + rname + "/"
 
 	//Create folder for dockerfile
