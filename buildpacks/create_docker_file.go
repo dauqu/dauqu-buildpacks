@@ -28,11 +28,15 @@ CMD [ "node", "index.js" ]
 	`
 
 	docker_golang := `
-FROM golang:latest
+FROM golang:alpine as builder
 WORKDIR ` + Workdir + "/" + rname + `
 COPY . .
 RUN go get
 RUN go build -o main .
+
+FROM alpine
+WORKDIR /app
+COPY --from=builder ` + Workdir + "/" + rname + ` /app/
 EXPOSE ` + Port + `
 CMD ["./main"]
 	`
