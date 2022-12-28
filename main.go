@@ -23,7 +23,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	fmt.Println(language)
+	fmt.Println(language + " project detected")
 
 	//Create dockerfile
 	err = bp.CreateDockerfile(project_dir, expose_port, language, name)

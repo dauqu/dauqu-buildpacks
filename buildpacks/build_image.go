@@ -10,8 +10,6 @@ import (
 
 func BuildImage(Workdir string, Name string) error {
 
-	fmt.Println("Building image...")
-
 	//Replace dot with underscore in name
 	rname := strings.ReplaceAll(Name, ".", "_")
 
@@ -24,7 +22,7 @@ func BuildImage(Workdir string, Name string) error {
 	//Execute command
 	if os_name == "windows" {
 
-		command := "docker build -t " + rname + " -f " + dockerfile + " " + Workdir
+		command := "docker build -t " + rname + " " + dockerfile
 		cmd := exec.Command("cmd", "/C", command)
 		//Get html output
 		cmd.Stdout = os.Stdout

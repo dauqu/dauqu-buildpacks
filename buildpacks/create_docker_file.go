@@ -1,58 +1,58 @@
 package buildpacks
 
 import (
-	"fmt"
 	"os"
 	"strings"
 )
 
 func CreateDockerfile(Workdir string, Port string, language string, Name string) (err error) {
-	fmt.Println("Creating dockerfile...")
 
 	rname := strings.ReplaceAll(Name, ".", "_")
 
 	docker_nodejs := `
-	FROM node:16.3.0-alpine3.13
-	WORKDIR ` + Workdir + "/" + rname + `
-	COPY package*.json ./
-	COPY . .
-	EXPOSE ` + Port + `
-	RUN npm install
-	CMD [ "node", "index.js" ]
+FROM node:16.3.0-alpine3.13
+WORKDIR ` + Workdir + "/" + rname + `
+COPY package*.json ./
+COPY . .
+EXPOSE ` + Port + `
+RUN npm install
+CMD [ "node", "index.js" ]
 	`
 
 	docker_golang := `
-	FROM golang:alpine
-	WORKDIR ` + Workdir + `
-	RUN apk add --no-cache build-base && go build -o main .
-	COPY . .
-	EXPOSE ` + Port + `
-	RUN go build -o main .
-	CMD [ "./main" ]
+FROM golang:latest
+WORKDIR ` + Workdir + "/" + rname + `
+COPY . .
+RUN go get
+RUN go build -o main .
+EXPOSE ` + Port + `
+CMD ["./main"]
 	`
 	docker_python := `
-	FROM python:3.9.5-alpine3.13
-	WORKDIR ` + Workdir + `
-	COPY . .
-	RUN pip install -r requirements.txt
-	EXPOSE ` + Port + `
-	CMD [ "python", "main.py" ]
+FROM python:3.9.5-alpine3.13
+WORKDIR ` + Workdir + `
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE ` + Port + `
+CMD ["python", "main.py"]
 	`
 	docker_php := `
-	FROM php:8.0.3-apache
-	WORKDIR ` + Workdir + `
-	COPY . .
-	EXPOSE ` + Port + `
-	CMD [ "php", "-S", "0.0.0.0:80"]
+FROM php:8.0.3-apache
+WORKDIR ` + Workdir + `
+COPY . .
+EXPOSE ` + Port + `
+CMD [ "php", "-S", "0.0.0.0:80"]
 	`
 	docker_rust := `
-	FROM rust:1.51.0-alpine3.13
-	WORKDIR ` + Workdir + `
-	COPY . .
-	RUN cargo build --release
-	EXPOSE ` + Port + `
-	CMD [ "./target/release/main" ]
+FROM rust:1.51.0-alpine3.13
+WORKDIR ` + Workdir + `
+COPY . .
+RUN cargo build --release
+EXPOSE ` + Port + `
+CMD [ "./target/release/main" ]
 	`
+
 
 	dockerfile := Workdir + "/" + rname + "/"
 

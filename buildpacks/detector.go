@@ -1,14 +1,12 @@
 package buildpacks
 
 import (
-	"fmt"
 	"os"
+	"path/filepath"
 )
 
 // Program detects the programming language of the project
 func DetectLanguage(Source string) (res string, err error) {
-
-	fmt.Println("Detecting language...")
 
 	//Get all files and folders in current directory
 	files, err := os.ReadDir(Source)
@@ -19,23 +17,26 @@ func DetectLanguage(Source string) (res string, err error) {
 	//Check if there is already a buildpacks folder
 	for _, file := range files {
 
+		//Get files extension
+		ext := filepath.Ext(file.Name())
+
 		//If there is a main.go and go.mod file
-		if file.Name() == "main.go" {
+		if file.Name() == "main.go" || file.Name() == "go.mod" || ext == ".go" {
 			return "go", nil
 		}
 
-		//If there is a package.json file
-		if file.Name() == "package.json" || file.Name() == "yarn.lock" || file.Name() == "package-lock.json" {
+		//If there is a package.json file 
+		if file.Name() == "package.json" || file.Name() == "yarn.lock" || file.Name() == "package-lock.json" && ext == ".js" {
 			return "nodejs", nil
 		}
 
 		//If there is a index.php file
-		if file.Name() == "index.php" {
+		if file.Name() == "index.php" && ext == ".php" {
 			return "php", nil
 		}
 
 		//Find python project by checking if there is a requirements.txt file or not
-		if file.Name() == "main.py" || file.Name() == "requirements.txt" {
+		if file.Name() == "main.py" || file.Name() == "requirements.txt" || file.Name() == "manage.py" && ext == ".py" {
 			return "python", nil
 		}
 
