@@ -7,9 +7,9 @@ import (
 
 func main() {
 
-	project_dir := "/var/www/uploads"
-	name := "go"
-	expose_port := "8080"
+	project_dir := "/Users/harshaweb/Documents/projects"
+	name := "node"
+	expose_port := "3000"
 
 	//Dectect language
 	language, err := bp.DetectLanguage(project_dir + "/" + name)
