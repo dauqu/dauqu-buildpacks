@@ -30,13 +30,18 @@ func DetectLanguage(Source string) (res string, err error) {
 		}
 
 		//If there is a package.json file 
-		if file.Name() == "package.json" || file.Name() == "yarn.lock" || file.Name() == "package-lock.json" && ext == ".js" {
+		if file.Name() == "package.json" || file.Name() == "yarn.lock" || file.Name() == "package-lock.json" && file.Name() != "composer.json" && ext == ".js" {
 			return "nodejs", nil
 		}
 
 		//If there is a index.php file
 		if file.Name() == "index.php" || file.Name() == "composer.json" && ext == ".php" {
 			return "php", nil
+		}
+
+		//Dectect laravel project
+		if file.Name() == "artisan" && file.Name() == "composer.json" {
+			return "laravel", nil
 		}
 
 		//Find python project by checking if there is a requirements.txt file or not
