@@ -17,40 +17,51 @@ func DetectLanguage(Source string) (res string, err error) {
 	//Check if there is already a buildpacks folder
 	for _, file := range files {
 
-		//Get files extension
+		//Get files extension and name
 		ext := filepath.Ext(file.Name())
+		name := file.Name()
 
-		if file.Name() == "index.html" && ext == ".html" {
+		//For static projects
+		if name == "index.html" && ext == ".html" {
 			return "static", nil
 		}
 
-		//If there is a main.go and go.mod file
+		//For Go projects
 		if file.Name() == "main.go" || file.Name() == "go.mod" && ext == ".go" {
 			return "go", nil
 		}
 
-		//If there is a package.json file 
-		if file.Name() == "package.json" || file.Name() == "yarn.lock" || file.Name() == "package-lock.json" && file.Name() != "composer.json" && ext == ".js" {
-			return "nodejs", nil
+		//For Nodejs projects and React projects
+		if name == "package.json" && name != "composer.json" && ext != ".php" && name != "package-lock.json" || name == "yarn.lock" {
+			//CHeck if folder contains src & public folder
+			if _, err := os.Stat(Source + "/src"); err == nil {
+				if _, err := os.Stat(Source + "/public"); err == nil {
+					return "react", nil
+				}
+			} else {
+				return "nodejs", nil
+			}
 		}
 
-		//If there is a index.php file
-		if file.Name() == "index.php" || file.Name() == "composer.json" && ext == ".php" {
-			return "php", nil
+		//For Php projects
+		if file.Name() == "composer.json" || file.Name() == "index.php" || ext == ".php" {
+			//Check if folder contains artisan file and app folder
+			if _, err := os.Stat(Source + "/app"); err == nil {
+				if _, err := os.Stat(Source + "/artisan"); err == nil {
+					return "laravel", nil
+				}
+			} else {
+				return "php", nil
+			}
 		}
 
-		//Dectect laravel project
-		if file.Name() == "artisan" && file.Name() == "composer.json" {
-			return "laravel", nil
-		}
-
-		//Find python project by checking if there is a requirements.txt file or not
+		//For Python project
 		if file.Name() == "main.py" || file.Name() == "requirements.txt" || file.Name() == "manage.py" && ext == ".py" {
 			return "python", nil
 		}
 
-		//Find Ruby project
-		if file.Name() == "Cargo.toml" && ext == ".rs" {
+		//For Rust project
+		if file.Name() == "Cargo.toml" {
 			return "rust", nil
 		}
 
@@ -148,9 +159,8 @@ func DetectLanguage(Source string) (res string, err error) {
 		if file.Name() == "deno.json" {
 			return "dino", nil
 		}
-
 	}
 
 	//Return no project detected
-	return "", nil
+	return "No Project detected", nil
 }

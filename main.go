@@ -7,9 +7,8 @@ import (
 
 func main() {
 
-	project_dir := "/Users/harshaweb/Documents/projects"
-	name := "laravel"
-	// expose_port := "3000"
+	project_dir := "/Users/harshaweb/Public/projects"
+	name := "react-app"
 
 	//Dectect language
 	language, err := bp.DetectLanguage(project_dir + "/" + name)
@@ -17,17 +16,18 @@ func main() {
 		fmt.Println(err)
 	}
 
+
 	//Create dockerfile
-	// err = bp.CreateDockerfile(project_dir, expose_port, language, name)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
+	err = bp.CreateDockerfile(project_dir, language, name)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	fmt.Printf("\x1b[34m%-10s %-10s\x1b[0m\n", language, " Project detected")
 
 	// //Build image
-	// err = bp.BuildImage(project_dir, name)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
+	err = bp.BuildImage(project_dir, name)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
