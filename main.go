@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	project_dir := "/var/www"
+	project_dir := "/Users/harshaweb/Documents/projects"
 	name := "laravel"
 	// expose_port := "3000"
 
