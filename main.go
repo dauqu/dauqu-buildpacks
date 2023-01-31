@@ -7,8 +7,8 @@ import (
 
 func main() {
 
-	project_dir := "/Users/harshaweb/Public/projects"
-	name := "react-app"
+	project_dir := "/Users/harshaweb/Public/go"
+	name := "ws-test"
 
 	//Dectect language
 	language, err := bp.DetectLanguage(project_dir + "/" + name)

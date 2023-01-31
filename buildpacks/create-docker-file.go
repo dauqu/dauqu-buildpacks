@@ -41,12 +41,13 @@ CMD ["nginx", "-g", "daemon off;"]
 FROM golang:alpine as builder
 WORKDIR ` + Workdir + "/" + rname + `
 COPY . .
+RUN apk add --no-cache gcc musl-dev linux-headers
 RUN go get
 RUN go build -o main .
 
 FROM alpine
 WORKDIR /app
-COPY --from=builder ` + Workdir + "/" + rname + ` /app/
+COPY --from=builder ` + Workdir + ` /app/
 CMD ["./main"]
 	`
 	docker_python := `
