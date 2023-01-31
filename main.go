@@ -7,8 +7,8 @@ import (
 
 func main() {
 
-	project_dir := "/Users/harshaweb/Public/go"
-	name := "ws-test"
+	project_dir := "/Users/harshaweb/Public/projects"
+	name := "php"
 
 	//Dectect language
 	language, err := bp.DetectLanguage(project_dir + "/" + name)
