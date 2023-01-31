@@ -61,8 +61,11 @@ CMD ["python", "main.py"]
 	docker_php := `
 FROM php:8.0.3-apache
 WORKDIR ` + Workdir + `
-COPY . .
-CMD [ "php", "-S", "0.0.0.0:80"]
+RUN rm -rf /var/www/html/*
+COPY . /var/www/html/
+
+EXPOSE 80
+CMD ["apache2-foreground"]
 	`
 	docker_rust := `
 FROM rust:1.51.0-alpine3.13
